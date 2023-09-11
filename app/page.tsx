@@ -4,6 +4,23 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "@/components/ui/accordion"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog"
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table"
 
 interface IncomeItem {
   catalogNum: string
@@ -178,23 +195,73 @@ export default async function Home() {
               {documents.items
                 .filter((doc: Document) => doc.type === 100)
                 .map((doc: Document) => (
-                  <div
-                    key={doc.id}
-                    className="flex flex-col w-full flex-1 items-start p-6 mb-2 rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700"
-                  >
-                    <div>
-                      <span className="font-bold">{doc.client.name}</span> (
-                      {doc.number})
-                    </div>
-                    <div>{doc.documentDate}</div>
-                    {" " +
-                      new Intl.NumberFormat("he-IL", {
-                        style: "currency",
-                        currency: "ILS", // Change the currency code as needed
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                      }).format(doc.amount)}
-                  </div>
+                  <>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <div
+                          key={doc.id}
+                          className="flex flex-col w-full flex-1 items-start p-6 mb-2 rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 hover:cursor-pointer"
+                        >
+                          <div>
+                            <span className="font-bold">{doc.client.name}</span>{" "}
+                            ({doc.number})
+                          </div>
+                          <div>{doc.documentDate}</div>
+                          {" " +
+                            new Intl.NumberFormat("he-IL", {
+                              style: "currency",
+                              currency: "ILS", // Change the currency code as needed
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2
+                            }).format(doc.amount)}
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            <div>
+                              <span className="font-bold">
+                                {doc.client.name}
+                              </span>{" "}
+                              ({doc.number})
+                            </div>
+                          </DialogTitle>
+                          <DialogDescription className="text-right">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-right">
+                                    כמות
+                                  </TableHead>
+                                  <TableHead className="text-right">
+                                    פירוט
+                                  </TableHead>
+                                  <TableHead className="text-right">
+                                    מחיר ליח׳
+                                  </TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              {doc.income.map((incomeItem) => (
+                                <TableBody key={incomeItem.itemId}>
+                                  <TableRow>
+                                    <TableCell className="text-right">
+                                      {incomeItem.quantity}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {incomeItem.description}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {incomeItem.price}
+                                    </TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              ))}
+                            </Table>
+                          </DialogDescription>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+                  </>
                 ))}
             </div>
           </AccordionContent>
@@ -214,23 +281,73 @@ export default async function Home() {
               {documents.items
                 .filter((doc: Document) => doc.type === 305)
                 .map((doc: Document) => (
-                  <div
-                    key={doc.id}
-                    className="flex flex-col w-full flex-1 items-start p-6 mb-2 rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700"
-                  >
-                    <div>
-                      <span className="font-bold">{doc.client.name}</span> (
-                      {doc.number})
-                    </div>
-                    <div>{doc.documentDate}</div>
-                    {" " +
-                      new Intl.NumberFormat("he-IL", {
-                        style: "currency",
-                        currency: "ILS", // Change the currency code as needed
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                      }).format(doc.amount)}
-                  </div>
+                  <>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <div
+                          key={doc.id}
+                          className="flex flex-col w-full flex-1 items-start p-6 mb-2 rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 hover:cursor-pointer"
+                        >
+                          <div>
+                            <span className="font-bold">{doc.client.name}</span>{" "}
+                            ({doc.number})
+                          </div>
+                          <div>{doc.documentDate}</div>
+                          {" " +
+                            new Intl.NumberFormat("he-IL", {
+                              style: "currency",
+                              currency: "ILS", // Change the currency code as needed
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2
+                            }).format(doc.amount)}
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            <div>
+                              <span className="font-bold">
+                                {doc.client.name}
+                              </span>{" "}
+                              ({doc.number})
+                            </div>
+                          </DialogTitle>
+                          <DialogDescription className="text-right">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-right">
+                                    כמות
+                                  </TableHead>
+                                  <TableHead className="text-right">
+                                    פירוט
+                                  </TableHead>
+                                  <TableHead className="text-right">
+                                    מחיר ליח׳
+                                  </TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              {doc.income.map((incomeItem) => (
+                                <TableBody key={incomeItem.itemId}>
+                                  <TableRow>
+                                    <TableCell className="text-right">
+                                      {incomeItem.quantity}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {incomeItem.description}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {incomeItem.price}
+                                    </TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              ))}
+                            </Table>
+                          </DialogDescription>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+                  </>
                 ))}
             </div>
           </AccordionContent>
