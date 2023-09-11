@@ -1,3 +1,10 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/accordion"
+
 interface IncomeItem {
   catalogNum: string
   description: string
@@ -143,43 +150,99 @@ export default async function Home() {
     .filter((doc: Document) => doc.type === 305)
     .reduce((sum: number, doc: Document) => sum + doc.amount, 0)
 
+  const totalOrders = documents.items
+    .filter((doc: Document) => doc.type === 100)
+    .reduce((sum: number, doc: Document) => sum + doc.amount, 0)
+
   return (
     <main className="w-full h-full">
       <div className="p-4 text-xl">
         <span className="font-bold">{business?.name}</span> |{" "}
         <span>{business?.taxId}</span>
       </div>
+      <hr />
+      <Accordion type="single" collapsible>
+        <AccordionItem value="orders">
+          <AccordionTrigger className="p-4 text-lg font-bold underline">
+            הזמנות פתוחות - סה״כ{" "}
+            {new Intl.NumberFormat("he-IL", {
+              style: "currency",
+              currency: "ILS", // Change the currency code as needed
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }).format(totalOrders)}
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="p-4 flex flex-col items-center justify-center">
+              {documents.items
+                .filter((doc: Document) => doc.type === 100)
+                .map((doc: Document) => (
+                  <div
+                    key={doc.id}
+                    className="flex flex-col w-full flex-1 items-start p-6 mb-2 rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700"
+                  >
+                    <div>
+                      <span className="font-bold">{doc.client.name}</span> (
+                      {doc.number})
+                    </div>
+                    <div>{doc.documentDate}</div>
+                    {" " +
+                      new Intl.NumberFormat("he-IL", {
+                        style: "currency",
+                        currency: "ILS", // Change the currency code as needed
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      }).format(doc.amount)}
+                  </div>
+                ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="invoices">
+          <AccordionTrigger className="p-4 text-lg font-bold underline">
+            חשבוניות פתוחות - סה״כ{" "}
+            {new Intl.NumberFormat("he-IL", {
+              style: "currency",
+              currency: "ILS", // Change the currency code as needed
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }).format(totalInvoices)}
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="p-4 flex flex-col items-center justify-center">
+              {documents.items
+                .filter((doc: Document) => doc.type === 305)
+                .map((doc: Document) => (
+                  <div
+                    key={doc.id}
+                    className="flex flex-col w-full flex-1 items-start p-6 mb-2 rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700"
+                  >
+                    <div>
+                      <span className="font-bold">{doc.client.name}</span> (
+                      {doc.number})
+                    </div>
+                    <div>{doc.documentDate}</div>
+                    {" " +
+                      new Intl.NumberFormat("he-IL", {
+                        style: "currency",
+                        currency: "ILS", // Change the currency code as needed
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      }).format(doc.amount)}
+                  </div>
+                ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
       <div className="p-4 text-lg font-bold">
-        חשבוניות פתוחות - סה״כ{" "}
+        סה״כ{" "}
         {new Intl.NumberFormat("he-IL", {
           style: "currency",
           currency: "ILS", // Change the currency code as needed
           minimumFractionDigits: 2,
           maximumFractionDigits: 2
-        }).format(totalInvoices)}
-      </div>
-      <div className="p-4 flex flex-col items-center justify-center">
-        {documents.items
-          .filter((doc: Document) => doc.type === 305)
-          .map((doc: Document) => (
-            <div
-              key={doc.id}
-              className="flex flex-col w-full flex-1 items-start p-6 mb-2 rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700"
-            >
-              <div>
-                <span className="font-bold">{doc.client.name}</span> (
-                {doc.number})
-              </div>
-              <div>{doc.documentDate}</div>
-              {" " +
-                new Intl.NumberFormat("he-IL", {
-                  style: "currency",
-                  currency: "ILS", // Change the currency code as needed
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
-                }).format(doc.amount)}
-            </div>
-          ))}
+        }).format(totalOrders + totalInvoices)}
       </div>
     </main>
   )
