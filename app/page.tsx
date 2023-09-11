@@ -139,21 +139,38 @@ export default async function Home() {
   const business = await getBusiness(token.token)
   const documents = await getDocuments(token.token)
 
+  const totalInvoices = documents.items
+    .filter((doc: Document) => doc.type === 305)
+    .reduce((sum: number, doc: Document) => sum + doc.amount, 0)
+
   return (
     <main className="w-full h-full">
       <div className="p-4 text-xl">
         <span className="font-bold">{business?.name}</span> |{" "}
         <span>{business?.taxId}</span>
       </div>
-      <div className="p-4 text-lg font-bold">חשבוניות פתוחות</div>
-      <div className="p-4">
+      <div className="p-4 text-lg font-bold">
+        חשבוניות פתוחות - סה״כ{" "}
+        {new Intl.NumberFormat("he-IL", {
+          style: "currency",
+          currency: "ILS", // Change the currency code as needed
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }).format(totalInvoices)}
+      </div>
+      <div className="p-4 flex flex-col items-center justify-center">
         {documents.items
           .filter((doc: Document) => doc.type === 305)
           .map((doc: Document) => (
-            <div key={doc.id}>
-              (מס׳ חשבונית {doc.number}){" "}
-              <span className="font-bold">{doc.client.name}</span> | תאריך הפקה{" "}
-              {doc.documentDate} - על סך
+            <div
+              key={doc.id}
+              className="flex flex-col w-full flex-1 items-start p-6 mb-2 rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700"
+            >
+              <div>
+                <span className="font-bold">{doc.client.name}</span> (
+                {doc.number})
+              </div>
+              <div>{doc.documentDate}</div>
               {" " +
                 new Intl.NumberFormat("he-IL", {
                   style: "currency",
