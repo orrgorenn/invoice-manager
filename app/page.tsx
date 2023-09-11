@@ -130,7 +130,8 @@ async function getDocuments(token: string) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      cache: "no-store"
     }
   )
 
