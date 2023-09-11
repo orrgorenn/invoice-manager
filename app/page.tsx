@@ -203,7 +203,7 @@ export default async function Home() {
             חשבוניות פתוחות - סה״כ{" "}
             {new Intl.NumberFormat("he-IL", {
               style: "currency",
-              currency: "ILS", // Change the currency code as needed
+              currency: "ILS",
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
             }).format(totalInvoices)}
