@@ -1,5 +1,3 @@
-"use client"
-
 import {
   Accordion,
   AccordionContent,
@@ -25,28 +23,13 @@ import {
 import { getToken } from "./api/token"
 import { getBusiness } from "./api/business"
 import { getDocuments } from "./api/documents"
-import { useEffect, useState } from "react"
 
-export default function Home() {
-  const [business, setBusiness] = useState<Business | null>(null)
-  const [documents, setDocuments] = useState<Document[] | null>(null)
+export default async function Home() {
+  const tokenResponse = await getToken()
+  const business: Business = await getBusiness(tokenResponse.token)
+  const documentsResponse = await getDocuments(tokenResponse.token)
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const tokenResponse = await getToken()
-        const businessResponse = await getBusiness(tokenResponse.token)
-        const documentsResponse = await getDocuments(tokenResponse.token)
-
-        setBusiness(businessResponse)
-        setDocuments(documentsResponse.items)
-      } catch (error) {
-        console.error("Failed to fetch data:", error)
-      }
-    }
-
-    fetchData()
-  }, [])
+  const documents = documentsResponse.items
 
   const totalInvoices = documents
     ?.filter((doc: Document) => doc.type === 305)
