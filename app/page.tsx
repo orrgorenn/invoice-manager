@@ -100,7 +100,8 @@ async function getToken() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      next: { revalidate: 3600 }
     }
   )
 
