@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Accordion,
   AccordionContent,
@@ -15,162 +17,43 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow
 } from "@/components/ui/table"
+import { getToken } from "./api/token"
+import { getBusiness } from "./api/business"
+import { getDocuments } from "./api/documents"
+import { useEffect, useState } from "react"
 
-interface IncomeItem {
-  catalogNum: string
-  description: string
-  quantity: number
-  price: number
-  currency: string
-  currencyRate: number
-  vatType: number
-  amount: number
-  vat: number
-  itemId: string
-  amountTotal: number
-}
+export default function Home() {
+  const [business, setBusiness] = useState<Business | null>(null)
+  const [documents, setDocuments] = useState<Document[] | null>(null)
 
-interface PaymentMethod {
-  name: string
-  type: number
-  subType: number
-  price: number
-  ref: number[]
-  cancellable: boolean
-}
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const tokenResponse = await getToken()
+        const businessResponse = await getBusiness(tokenResponse.token)
+        const documentsResponse = await getDocuments(tokenResponse.token)
 
-interface ClientInfo {
-  id: string
-  name: string
-  emails: string[]
-  taxId: string
-  self: boolean
-}
-
-interface BusinessInfo {
-  type: number
-  exemption: boolean
-}
-
-interface Document {
-  id: string
-  description: string
-  type: number
-  number: string
-  documentDate: string
-  creationDate: number
-  status: number
-  lang: string
-  amountDueVat: number
-  amountExemptVat: number
-  amountExcludedVat: number
-  amountLocal: number
-  amountOpened: number
-  vat: number
-  amount: number
-  currency: string
-  currencyRate: number
-  vatType: number
-  income: IncomeItem[]
-  payment: PaymentMethod[]
-  client: ClientInfo
-  business: BusinessInfo
-  url: {
-    he: string
-    origin: string
-  }
-}
-
-async function getToken() {
-  const body = {
-    id: process.env.GREEN_INVOICE_API_KEY,
-    secret: process.env.GREEN_INVOICE_SECRET
-  }
-
-  const res = await fetch(
-    "https://api.greeninvoice.co.il/api/v1/account/token",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body),
-      next: { revalidate: 3600 }
-    }
-  )
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data")
-  }
-
-  return res.json()
-}
-
-async function getBusiness(token: string) {
-  const res = await fetch(
-    "https://api.greeninvoice.co.il/api/v1/businesses/me",
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        setBusiness(businessResponse)
+        setDocuments(documentsResponse.items)
+      } catch (error) {
+        console.error("Failed to fetch data:", error)
       }
     }
-  )
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch data ${res.status} ${res.body}`)
-  }
+    fetchData()
+  }, [])
 
-  return res.json()
-}
-
-async function getDocuments(token: string) {
-  const body = {
-    pageSize: 100,
-    type: [100, 305],
-    status: [0],
-    fromDate: "2022-01-01",
-    toDate: new Date().toISOString().substring(0, 10)
-  }
-
-  const res = await fetch(
-    "https://api.greeninvoice.co.il/api/v1/documents/search",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(body),
-      cache: "no-store"
-    }
-  )
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch data ${res.status} ${res.body}`)
-  }
-
-  return res.json()
-}
-
-export default async function Home() {
-  const token = await getToken()
-  const business = await getBusiness(token.token)
-  const documents = await getDocuments(token.token)
-
-  const totalInvoices = documents.items
-    .filter((doc: Document) => doc.type === 305)
+  const totalInvoices = documents
+    ?.filter((doc: Document) => doc.type === 305)
     .reduce((sum: number, doc: Document) => sum + doc.amount, 0)
 
-  const totalOrders = documents.items
-    .filter((doc: Document) => doc.type === 100)
+  const totalOrders = documents
+    ?.filter((doc: Document) => doc.type === 100)
     .reduce((sum: number, doc: Document) => sum + doc.amount, 0)
 
   return (
@@ -189,12 +72,12 @@ export default async function Home() {
               currency: "ILS", // Change the currency code as needed
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
-            }).format(totalOrders)}
+            }).format(totalOrders!)}
           </AccordionTrigger>
           <AccordionContent>
             <div className="p-4 flex flex-col items-center justify-center">
-              {documents.items
-                .filter((doc: Document) => doc.type === 100)
+              {documents
+                ?.filter((doc: Document) => doc.type === 100)
                 .sort((a: Document, b: Document) =>
                   a.client.name.localeCompare(b.client.name)
                 )
@@ -278,12 +161,12 @@ export default async function Home() {
               currency: "ILS",
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
-            }).format(totalInvoices)}
+            }).format(totalInvoices!)}
           </AccordionTrigger>
           <AccordionContent>
             <div className="p-4 flex flex-col items-center justify-center">
-              {documents.items
-                .filter((doc: Document) => doc.type === 305)
+              {documents
+                ?.filter((doc: Document) => doc.type === 305)
                 .sort((a: Document, b: Document) =>
                   a.client.name.localeCompare(b.client.name)
                 )
@@ -367,7 +250,7 @@ export default async function Home() {
           currency: "ILS", // Change the currency code as needed
           minimumFractionDigits: 2,
           maximumFractionDigits: 2
-        }).format(totalOrders + totalInvoices)}
+        }).format(totalOrders! + totalInvoices!)}
       </div>
     </main>
   )
