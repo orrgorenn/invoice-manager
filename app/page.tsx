@@ -195,6 +195,9 @@ export default async function Home() {
             <div className="p-4 flex flex-col items-center justify-center">
               {documents.items
                 .filter((doc: Document) => doc.type === 100)
+                .sort((a: Document, b: Document) =>
+                  a.client.name.localeCompare(b.client.name)
+                )
                 .map((doc: Document) => (
                   <>
                     <Dialog>
@@ -281,6 +284,9 @@ export default async function Home() {
             <div className="p-4 flex flex-col items-center justify-center">
               {documents.items
                 .filter((doc: Document) => doc.type === 305)
+                .sort((a: Document, b: Document) =>
+                  a.client.name.localeCompare(b.client.name)
+                )
                 .map((doc: Document) => (
                   <>
                     <Dialog>
